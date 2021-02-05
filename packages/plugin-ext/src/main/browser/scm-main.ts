@@ -20,7 +20,7 @@ import {
     SourceControlGroupFeatures,
     ScmMain,
     SourceControlProviderFeatures,
-    SourceControlResourceState
+    SourceControlResourceState, SCMRawResourceSplices
 } from '../../common/plugin-api-rpc';
 import { ScmProvider, ScmResource, ScmResourceDecorations, ScmResourceGroup, ScmCommand } from '@theia/scm/lib/browser/scm-provider';
 import { ScmRepository } from '@theia/scm/lib/browser/scm-repository';
@@ -38,7 +38,7 @@ export class ScmMainImpl implements ScmMain, Disposable {
     private readonly scmService: ScmService;
     private readonly scmRepositoryMap = new Map<number, ScmRepository>();
     private readonly colors: ColorRegistry;
-    private lastSelectedSourceControlHandle: number | undefined;
+    // private lastSelectedSourceControlHandle: number | undefined;
 
     private readonly toDispose = new DisposableCollection();
 
@@ -54,14 +54,14 @@ export class ScmMainImpl implements ScmMain, Disposable {
     }
 
     protected updateSelectedRepository(repository: ScmRepository | undefined): void {
-        const sourceControlHandle = repository ? this.getSourceControlHandle(repository) : undefined;
-        if (sourceControlHandle !== undefined) {
-            this.proxy.$setSourceControlSelection(sourceControlHandle, true);
-        }
-        if (this.lastSelectedSourceControlHandle !== undefined && this.lastSelectedSourceControlHandle !== sourceControlHandle) {
-            this.proxy.$setSourceControlSelection(this.lastSelectedSourceControlHandle, false);
-        }
-        this.lastSelectedSourceControlHandle = sourceControlHandle;
+        // const sourceControlHandle = repository ? this.getSourceControlHandle(repository) : undefined;
+        // if (sourceControlHandle !== undefined) {
+        //     this.proxy.$setSourceControlSelection(sourceControlHandle, true);
+        // }
+        // if (this.lastSelectedSourceControlHandle !== undefined && this.lastSelectedSourceControlHandle !== sourceControlHandle) {
+        //     this.proxy.$setSourceControlSelection(this.lastSelectedSourceControlHandle, false);
+        // }
+        // this.lastSelectedSourceControlHandle = sourceControlHandle;
     }
 
     protected getSourceControlHandle(repository: ScmRepository): number | undefined {
@@ -74,9 +74,9 @@ export class ScmMainImpl implements ScmMain, Disposable {
     async $registerSourceControl(sourceControlHandle: number, id: string, label: string, rootUri: string): Promise<void> {
         const provider = new PluginScmProvider(this.proxy, sourceControlHandle, id, label, rootUri, this.colors);
         const repository = this.scmService.registerScmProvider(provider);
-        repository.input.onDidChange(() =>
-            this.proxy.$updateInputBox(sourceControlHandle, repository.input.value)
-        );
+        // repository.input.onDidChange(() =>
+        //     this.proxy.$updateInputBox(sourceControlHandle, repository.input.value)
+        // );
         this.scmRepositoryMap.set(sourceControlHandle, repository);
         if (this.scmService.repositories.length === 1) {
             this.updateSelectedRepository(repository);
@@ -152,6 +152,20 @@ export class ScmMainImpl implements ScmMain, Disposable {
             const provider = repository.provider as PluginScmProvider;
             provider.updateGroupResourceStates(sourceControlHandle, groupHandle, resources);
         }
+    }
+
+    $registerGroups(sourceControlHandle: number, groups: [number, string, string, SourceControlGroupFeatures][], splices: SCMRawResourceSplices[]): void {
+    }
+
+    $setInputBoxVisibility(sourceControlHandle: number, visible: boolean): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    $setValidationProviderIsEnabled(sourceControlHandle: number, enabled: boolean): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+
+    $spliceResourceStates(sourceControlHandle: number, splices: SCMRawResourceSplices[]): void {
     }
 }
 export class PluginScmProvider implements ScmProvider {
@@ -376,6 +390,6 @@ export class PluginScmResource implements ScmResource {
     ) { }
 
     open(): Promise<void> {
-        return this.proxy.$executeResourceCommand(this.group.provider.handle, this.group.handle, this.handle);
+        return this.proxy.$executeResourceCommand(this.group.provider.handle, this.group.handle, this.handle, true);
     }
 }
