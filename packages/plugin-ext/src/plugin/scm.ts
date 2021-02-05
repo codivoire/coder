@@ -30,7 +30,7 @@ import { UriComponents } from '../common/uri-components';
 import { Command } from '../common/plugin-api-rpc-model';
 import { RPCProtocol } from '../common/rpc-protocol';
 import { comparePaths } from '../common/paths-util';
-
+import { URI } from 'vscode-uri';
 type ProviderHandle = number;
 type GroupHandle = number;
 type ResourceStateHandle = number;
@@ -39,7 +39,7 @@ function getIconResource(decorations?: theia.SourceControlResourceThemableDecora
     if (!decorations) {
         return undefined;
     } else if (typeof decorations.iconPath === 'string') {
-        return theia.Uri.parse(decorations.iconPath);
+        return URI.file(decorations.iconPath);
     } else {
         return decorations.iconPath;
     }
@@ -567,7 +567,7 @@ class ExtHostSourceControl implements theia.SourceControl {
         private _rootUri?: theia.Uri
     ) {
         this._inputBox = new ExtHostSCMInputBox(_extension, this._proxy, this.handle);
-        this._proxy.$registerSourceControl(this.handle, _id, _label, _rootUri?.toString());
+        this._proxy.$registerSourceControl(this.handle, _id, _label, _rootUri);
     }
 
     private createdResourceGroups = new Map<ExtHostSourceControlResourceGroup, Disposable>();
@@ -755,7 +755,7 @@ export class ScmExtImpl implements ScmExt {
             return Promise.resolve(undefined);
         }
 
-        return new Promise<UriComponents | undefined>(() => sourceControl.quickDiffProvider!.provideOriginalResource!(theia.Uri.parse(uriComponents), token))
+        return new Promise<UriComponents | undefined>(() => sourceControl.quickDiffProvider!.provideOriginalResource!(URI.file(uriComponents), token))
             .then<UriComponents | undefined>(r => r || undefined);
     }
 

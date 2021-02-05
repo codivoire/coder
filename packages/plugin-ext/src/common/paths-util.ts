@@ -43,6 +43,7 @@ SOFTWARE.
 */
 
 import { sep } from '@theia/callhierarchy/lib/common/paths';
+// import { compareFileNames } from '@theia/monaco/lib/browser/monaco-comparers';
 
 const replaceRegex = new RegExp('//+', 'g');
 

@@ -763,23 +763,22 @@ export interface DecorationData {
 }
 
 export interface ScmMain {
-    $registerSourceControl(sourceControlHandle: number, id: string, label: string, rootUri?: string): Promise<void>
-    $updateSourceControl(sourceControlHandle: number, features: SourceControlProviderFeatures): Promise<void>;
-    $unregisterSourceControl(sourceControlHandle: number): Promise<void>;
+    $registerSourceControl(handle: number, id: string, label: string, rootUri: UriComponents | undefined): void;
+    $updateSourceControl(handle: number, features: SourceControlProviderFeatures): void;
+    $unregisterSourceControl(handle: number): void;
 
     $registerGroups(sourceControlHandle: number, groups: [number /* handle*/, string /* id*/, string /* label*/,
         SourceControlGroupFeatures][], splices: SCMRawResourceSplices[]): void;
-    $updateGroup(sourceControlHandle: number, groupHandle: number, features: SourceControlGroupFeatures): Promise<void>;
-    $updateGroupLabel(sourceControlHandle: number, groupHandle: number, label: string): Promise<void>;
-    $unregisterGroup(sourceControlHandle: number, groupHandle: number): Promise<void>;
+    $updateGroup(sourceControlHandle: number, handle: number, features: SourceControlGroupFeatures): void;
+    $updateGroupLabel(sourceControlHandle: number, handle: number, label: string): void;
+    $unregisterGroup(sourceControlHandle: number, handle: number): void;
 
     $spliceResourceStates(sourceControlHandle: number, splices: SCMRawResourceSplices[]): void;
-    $updateResourceState(sourceControlHandle: number, groupHandle: number, resources: SourceControlResourceState[]): Promise<void>;
 
-    $setInputBoxValue(sourceControlHandle: number, value: string): Promise<void>;
-    $setInputBoxPlaceholder(sourceControlHandle: number, placeholder: string): Promise<void>;
-    $setInputBoxVisibility(sourceControlHandle: number, visible: boolean): Promise<void>;
-    $setValidationProviderIsEnabled(sourceControlHandle: number, enabled: boolean): Promise<void>;
+    $setInputBoxValue(sourceControlHandle: number, value: string): void;
+    $setInputBoxPlaceholder(sourceControlHandle: number, placeholder: string): void;
+    $setInputBoxVisibility(sourceControlHandle: number, visible: boolean): void;
+    $setValidationProviderIsEnabled(sourceControlHandle: number, enabled: boolean): void;
 }
 
 export interface SourceControlProviderFeatures {
